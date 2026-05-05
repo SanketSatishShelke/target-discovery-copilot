@@ -4,15 +4,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ot_raw_dir = os.environ["OT_RAW_DIR"]
+duckdb_path = os.environ["DUCKDB_PATH"]
 
-conn = duckdb.connect()
+conn = duckdb.connect(duckdb_path)
 
-print("=== SCHEMA ===")
-print(conn.execute(f"DESCRIBE SELECT * FROM read_parquet('{ot_raw_dir}/*.parquet')").fetchdf().to_string())
+print("=== VIEWS IN DATABASE ===")
+print(conn.execute("SHOW TABLES").fetchdf().to_string())
 
-print("\n=== SAMPLE ROWS ===")
-print(conn.execute(f"SELECT * FROM read_parquet('{ot_raw_dir}/*.parquet') LIMIT 5").fetchdf().to_string())
+print("\n=== SAMPLE FROM STAGING VIEW ===")
+print(conn.execute("""
+    SELECT *
+    FROM main.stg_open_targets__associations
+    LIMIT 5
+""").fetchdf().to_string())
 
 print("\n=== ROW COUNT ===")
-print(conn.execute(f"SELECT COUNT(*) as total_rows FROM read_parquet('{ot_raw_dir}/*.parquet')").fetchdf().to_string())
+print(conn.execute("""
+    SELECT COUNT(*) AS total_rows
+    FROM main.stg_open_targets__associations
+""").fetchdf().to_string())
