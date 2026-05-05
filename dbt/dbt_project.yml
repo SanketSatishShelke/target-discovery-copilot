@@ -1,0 +1,18 @@
+name: target_discovery
+version: '1.0.0'
+config-version: 2
+
+profile: target_discovery
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+models:
+  target_discovery:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

@@ -20,6 +20,10 @@ data/
 .dbt/
 logs/
 
+# dbt compiled output
+dbt/target/
+dbt/logs/
+
 # Nextflow
 .nextflow*
 work/
