@@ -27,3 +27,6 @@ work/
 # IDE
 .idea/
 .vscode/
+
+#tests
+/tests
