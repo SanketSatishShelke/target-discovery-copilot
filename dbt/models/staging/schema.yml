@@ -4,18 +4,19 @@ version: 2
 models:
   - name: stg_open_targets__associations
     description: "Standardised disease-target association scores from Open Targets"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - disease_id
+              - target_id
     columns:
       - name: disease_id
-        description: "Standardised disease identifier (EFO format)"
         tests:
           - not_null
-
       - name: target_id
-        description: "Ensembl gene ID"
         tests:
           - not_null
-
       - name: association_score
-        description: "0-1 confidence score, higher = stronger evidence"
         tests:
           - not_null
