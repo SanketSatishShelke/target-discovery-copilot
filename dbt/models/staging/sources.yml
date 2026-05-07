@@ -1,0 +1,11 @@
+# dbt/models/staging/sources.yml
+version: 2
+
+sources:
+  - name: open_targets
+    description: "Open Targets Platform association scores v26.03"
+    tables:
+      - name: associations_raw
+        description: "Direct association scores between diseases and targets"
+        meta:
+          external_location: '{{ env_var("OT_RAW_DIR") }}/*.parquet'
