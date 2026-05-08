@@ -16,3 +16,10 @@ models:
       +materialized: view
     marts:
       +materialized: table
+
+seeds:
+  target_discovery_copilot:
+    gene_symbols:
+      +column_types:
+        ensembl_id: varchar
+        gene_symbol: varchar
