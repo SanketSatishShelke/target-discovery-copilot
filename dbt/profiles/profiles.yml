@@ -1,0 +1,9 @@
+target_discovery:
+  target: ci
+  outputs:
+    ci:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH') }}"
+      threads: 2
+      extensions:
+        - parquet
