@@ -18,8 +18,12 @@ models:
       +materialized: table
 
 seeds:
-  target_discovery_copilot:
+  target_discovery:
     gene_symbols:
       +column_types:
         ensembl_id: varchar
         gene_symbol: varchar
+    disease_names:
+      +column_types:
+        disease_id: varchar
+        disease_name: varchar
