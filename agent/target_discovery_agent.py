@@ -21,10 +21,11 @@ def get_top_targets(disease_id: str, top_n: int = 10) -> str:
     conn = duckdb.connect(os.environ["DUCKDB_PATH"], read_only=True)
     result = conn.execute("""
         SELECT
+            rank_within_disease AS rank,
+            gene_symbol,
             target_id,
-            association_score,
-            evidence_count,
-            rank_within_disease
+            ROUND(association_score, 4) AS association_score,
+            evidence_count
         FROM mart_target_rankings
         WHERE disease_id = ?
         ORDER BY rank_within_disease
@@ -58,10 +59,10 @@ def list_available_diseases(limit: int = 20) -> str:
 
 # --- LLM via NVIDIA NIM ---
 llm = ChatOpenAI(
-    model="meta/llama-3.1-8b-instruct",
+    model="meta/llama-3.3-70b-instruct",
     base_url="https://integrate.api.nvidia.com/v1",
     api_key=os.environ["API_KEY"],
-    temperature=0
+    temperature=0,
 )
 
 # --- Agent ---
