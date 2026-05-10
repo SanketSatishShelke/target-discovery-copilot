@@ -1,0 +1,60 @@
+name: dbt CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      # Override .env paths -- runner doesn't have /mnt/data
+      DATA_ROOT: ${{ github.workspace }}/ci/data
+      RAW_DATA_DIR: ${{ github.workspace }}/ci/data/raw
+      OT_RAW_DIR: ${{ github.workspace }}/ci/fixtures/open_targets
+      DUCKDB_PATH: ${{ github.workspace }}/ci/data/target_discovery.duckdb
+      GENE_SYMBOLS_SEED_PATH: ${{ github.workspace }}/dbt/seeds/gene_symbols.csv
+      DISEASE_NAMES_SEED_PATH: ${{ github.workspace }}/dbt/seeds/disease_names.csv
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install Python dependencies
+        run: uv sync --frozen
+
+      - name: Prepare CI data directory
+        run: mkdir -p "$DATA_ROOT" "$RAW_DATA_DIR"
+
+      - name: Verify fixture exists
+        run: |
+          if [ ! -d "$OT_RAW_DIR" ] || [ -z "$(ls -A $OT_RAW_DIR 2>/dev/null)" ]; then
+            echo "ERROR: fixture parquet missing at $OT_RAW_DIR"
+            echo "Commit a small fixture parquet to ci/fixtures/open_targets/ before this CI can run."
+            exit 1
+          fi
+          ls -lh "$OT_RAW_DIR"
+
+      - name: dbt deps
+        working-directory: dbt
+        run: uv run dbt deps
+
+      - name: dbt debug
+        working-directory: dbt
+        run: uv run dbt debug --profiles-dir profiles
+
+      - name: dbt build
+        working-directory: dbt
+        run: uv run dbt build --profiles-dir profiles
