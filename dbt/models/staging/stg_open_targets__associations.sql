@@ -9,7 +9,7 @@ WITH source AS (
 
 renamed AS (
     SELECT
-        diseaseId        AS disease_id_renamed,
+        diseaseId        AS disease_id,
         targetId         AS target_id,
         associationScore AS association_score,
         evidenceCount    AS evidence_count,
