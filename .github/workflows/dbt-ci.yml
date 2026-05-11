@@ -35,6 +35,9 @@ jobs:
       - name: Install Python dependencies
         run: uv sync --frozen
 
+      - name: Run pytest
+        run: uv run pytest tests/ -v
+
       - name: Prepare CI data directory
         run: mkdir -p "$DATA_ROOT" "$RAW_DATA_DIR"
 
