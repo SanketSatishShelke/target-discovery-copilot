@@ -1,6 +1,6 @@
-import re
 import streamlit as st
 from agent.target_discovery_agent import run_agent
+from dashboard.parsers import parse_agent_response
 import concurrent.futures
 
 def parse_agent_response(raw: str) -> dict:
