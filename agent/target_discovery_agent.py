@@ -57,29 +57,26 @@ def list_available_diseases(limit: int = 20) -> str:
     return result.to_string(index=False)
 
 
-# --- LLM via NVIDIA NIM ---
-llm = ChatOpenAI(
-    model="meta/llama-3.3-70b-instruct",
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=os.environ["API_KEY"],
-    temperature=0,
-)
-
-# --- Agent ---
-agent = create_react_agent(
-    model=llm,
-    tools=[get_top_targets, list_available_diseases],
-    prompt=(
-        "You are a drug target discovery assistant. "
-        "You help researchers identify the most promising drug targets for diseases "
-        "based on Open Targets association data. "
-        "Always use the tools to fetch real data before answering. "
-        "When given a disease name, use list_available_diseases to find the EFO ID first."
-    )
-)
-
-
 def run_agent(question: str):
+    llm = ChatOpenAI(
+        model="meta/llama-3.3-70b-instruct",
+        base_url="https://integrate.api.nvidia.com/v1",
+        api_key=os.environ["API_KEY"],
+        temperature=0,
+    )
+
+    agent = create_react_agent(
+        model=llm,
+        tools=[get_top_targets, list_available_diseases],
+        prompt=(
+            "You are a drug target discovery assistant. "
+            "You help researchers identify the most promising drug targets for diseases "
+            "based on Open Targets association data. "
+            "Always use the tools to fetch real data before answering. "
+            "When given a disease name, use list_available_diseases to find the EFO ID first."
+        )
+    )
+
     print(f"\nQuestion: {question}")
     print("-" * 60)
     result = agent.invoke({"messages": [HumanMessage(content=question)]})
