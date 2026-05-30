@@ -3,36 +3,6 @@ from agent.target_discovery_agent import run_agent
 from dashboard.parsers import parse_agent_response
 import concurrent.futures
 
-def parse_agent_response(raw: str) -> dict:
-    """
-    Extract structured data from agent response.
-    Returns dict with keys: summary, targets (list of dicts), notes.
-    """
-    lines = raw.strip().split("\n")
-    targets = []
-    notes = []
-    summary = ""
-
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        # Match lines like: "1. APC (ENSG00000134982) — score: 0.71"
-        match = re.match(r"^\d+[\.\)]\s+(\w+)\s*\(?(ENSG\d+)?\)?.*?(\d+\.\d+)", line)
-        if match:
-            targets.append({
-                "gene": match.group(1),
-                "ensembl_id": match.group(2) or "",
-                "score": float(match.group(3))
-            })
-        elif len(targets) == 0 and len(line) > 20:
-            summary = line
-        else:
-            notes.append(line)
-
-    return {"summary": summary, "targets": targets, "notes": notes}
-
-
 def render():
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -75,7 +45,7 @@ def _render_agent_output(content):
         df = pd.DataFrame(content["targets"])
         st.dataframe(
             df,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
             column_config={
                 "gene": st.column_config.TextColumn("Gene", width="medium"),
